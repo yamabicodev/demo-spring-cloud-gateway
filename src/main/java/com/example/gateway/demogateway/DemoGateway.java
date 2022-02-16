@@ -5,6 +5,9 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Spring Cloud Gatewayのデモ
+ */
 @Configuration
 public class DemoGateway {
 
@@ -31,7 +34,7 @@ public class DemoGateway {
                                 .filters(f -> f.rewritePath("/.*", "/search"))
                 .uri("https://github.com/"))
 
-                // 重み付け(荷重ルーティング)例
+                // 重み付け(加重ルーティング)例
                 // 対象エンドポイントをグループID(group-1)でグルーピングし重み付けをする。
                 // http://localhost:8080
                 .route("weight1", r ->
@@ -43,7 +46,14 @@ public class DemoGateway {
                         r.path("/")
                                 .and()
                                 .weight("group-1", 5)
-                                .uri("https://github.com/")
-                ).build();
+                                .uri("https://github.com/"))
+
+                 // Spring Cloud Gateway Global Filter - Forward Routing Filterテスト用
+                 // forward:/{endpoint}の記述でforwardリクエスト処理を実行する。
+                .route("forward", r ->
+                        r.path("/forward-filter-test")
+                                .and()
+                                .uri("forward:/forward"))
+                .build();
     }
 }
